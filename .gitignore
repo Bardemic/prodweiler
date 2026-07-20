@@ -1,6 +1,7 @@
 node_modules/
 dist/
 .wrangler/
+.references/effect/
 *.tsbuildinfo
 .DS_Store
 

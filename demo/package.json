@@ -1,0 +1,21 @@
+{
+  "name": "prodweiler-demo",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "deploy": "wrangler deploy --config wrangler.jsonc",
+    "dev": "wrangler dev --config wrangler.jsonc",
+    "start": "wrangler dev --config wrangler.jsonc",
+    "cf-typegen": "wrangler types --config wrangler.jsonc",
+    "check": "tsc --noEmit && wrangler deploy --dry-run --config wrangler.jsonc"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.1",
+    "typescript": "^5.5.2",
+    "wrangler": "^4.112.0"
+  },
+  "dependencies": {
+    "effect": "^3.22.0"
+  },
+  "description": "Telemetry source for Prodweiler development"
+}
