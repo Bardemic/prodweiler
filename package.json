@@ -12,8 +12,8 @@
     "publish": true
   },
   "dependencies": {
+    "@effect/platform": "^0.97.0",
     "effect": "^3.22.0",
-    "hono": "^4.12.31",
     "react": "19.2.1",
     "react-dom": "19.2.1"
   },
@@ -37,7 +37,7 @@
   "scripts": {
     "build": "tsc -b && vite build",
     "cf-typegen": "wrangler types",
-    "check": "tsc && vite build && wrangler deploy --dry-run",
+    "check": "tsc -b && vite build && wrangler deploy --dry-run",
     "deploy": "wrangler deploy",
     "dev": "vite",
     "lint": "eslint .",

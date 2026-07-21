@@ -13,6 +13,19 @@
 	"observability": {
 		"enabled": true
 	},
+	"vars": {
+		"CLOUDFLARE_ACCOUNT_ID": "e7e3470b3ad5de64d5676db7de0267db"
+	},
+	"secrets": {
+		"required": ["CLOUDFLARE_API_TOKEN"]
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "prodweiler",
+			"database_id": "85b4b3f5-4516-4de3-a24d-d123aa11bbb0"
+		}
+	],
 	"upload_source_maps": true,
 	"assets": {
 		"directory": "./dist/client",
