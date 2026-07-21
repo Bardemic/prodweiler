@@ -1,8 +1,4 @@
-import {
-	FetchHttpClient,
-	HttpApiBuilder,
-	HttpServer,
-} from "@effect/platform";
+import { HttpApiBuilder, HttpServer } from "@effect/platform";
 import { env } from "cloudflare:workers";
 import { Effect, Layer } from "effect";
 import {
@@ -24,12 +20,8 @@ const WorkersLive = HttpApiBuilder.group(
 	"workers",
 	(handlers) =>
 		handlers
-			.handle("listCloudflare", () =>
-                listCloudflareWorkers(env)
-			)
-			.handle("listMonitored", () =>
-				listMonitoredWorkers(env.DB),
-			)
+			.handle("listCloudflare", () => listCloudflareWorkers(env))
+			.handle("listMonitored", () => listMonitoredWorkers(env.DB))
 			.handle("addMonitored", ({ payload: { workerName } }) =>
 				Effect.gen(function* () {
 					const workers = yield* listCloudflareWorkers(env); // individual search later
@@ -45,9 +37,7 @@ const WorkersLive = HttpApiBuilder.group(
 			),
 );
 
-const HandlersLive = Layer.mergeAll(AppLive, WorkersLive).pipe(
-	Layer.provide(FetchHttpClient.layer),
-);
+const HandlersLive = Layer.mergeAll(AppLive, WorkersLive);
 
 const ApiLive = HttpApiBuilder.api(ProdweilerApi).pipe(
 	Layer.provide(HandlersLive),

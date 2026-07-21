@@ -32,10 +32,6 @@ export const AddMonitoredWorkerRequest = Schema.Struct({
 export type AddMonitoredWorkerRequest =
 	typeof AddMonitoredWorkerRequest.Type;
 
-export type ApiErrorResponse = {
-	readonly error: string;
-};
-
 export class CloudflareApiError extends Schema.TaggedError<CloudflareApiError>()(
 	"CloudflareApiError",
 	{ error: Schema.String },
