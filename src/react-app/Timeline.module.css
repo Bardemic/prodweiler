@@ -1,0 +1,118 @@
+.panel {
+	padding: 14px;
+}
+
+.heading {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 10px;
+	font-size: 0.85rem;
+}
+
+.navigation {
+	display: flex;
+	gap: 4px;
+}
+
+.navigation button {
+	min-width: 30px;
+	min-height: 28px;
+	padding: 2px 7px;
+	border: 1px solid #a3a3a3;
+	border-radius: 3px;
+	background: #fff;
+	color: #171717;
+	cursor: pointer;
+}
+
+.navigation button:disabled {
+	cursor: not-allowed;
+	opacity: 0.5;
+}
+
+.track {
+	position: relative;
+	display: grid;
+	grid-template-columns: repeat(144, minmax(1px, 1fr));
+	align-items: end;
+	gap: 2px;
+	height: 46px;
+	padding: 8px;
+	border: 1px solid #e5e5e5;
+}
+
+.tick {
+	display: block;
+	min-width: 0;
+	min-height: 0;
+	height: 18px;
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	background: #d4d4d4;
+	cursor: pointer;
+}
+
+.tick:focus-visible {
+	outline: 2px solid #171717;
+	outline-offset: 2px;
+}
+
+.tick:nth-child(6n) {
+	height: 28px;
+}
+
+.healthy {
+	background: #238636;
+}
+
+.errors,
+.anomaly {
+	background: #737373;
+}
+
+.investigated {
+	background: #c66a00;
+}
+
+.tooltip {
+	position: absolute;
+	top: calc(100% + 9px);
+	z-index: 10;
+	padding: 10px 12px;
+	border: 1px solid #a3a3a3;
+	border-radius: 4px;
+	background: #fff;
+	color: #171717;
+	white-space: pre-line;
+	font-size: 0.75rem;
+	line-height: 1.45;
+	pointer-events: none;
+}
+
+.tooltipArrow {
+	position: absolute;
+	top: -7px;
+	width: 14px;
+	height: 14px;
+	border-top: 1px solid #a3a3a3;
+	border-left: 1px solid #a3a3a3;
+	background: #fff;
+	transform: translateX(-7px) rotate(45deg);
+}
+
+.labels {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	margin-top: 5px;
+	font-size: 0.7rem;
+}
+
+.labels span:last-child {
+	text-align: right;
+}
+
+.pending {
+	background: #d4d4d4;
+}

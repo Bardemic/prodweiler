@@ -5,7 +5,11 @@ import type {
 	CloudflareWorkersResponse,
 	MonitoredWorker,
 	MonitoredWorkersResponse,
+	MonitoringState,
 } from "../shared/contracts";
+import { InvestigationThread } from "./InvestigationThread";
+import { Timeline } from "./Timeline";
+import styles from "./Workers.module.css";
 
 const request = async <ResponseBody,>(
 	url: string,
@@ -27,7 +31,10 @@ export function Workers() {
 	const [monitoredWorkers, setMonitoredWorkers] = useState<
 		ReadonlyArray<MonitoredWorker>
 	>([]);
+	const [workerToAdd, setWorkerToAdd] = useState("");
 	const [selectedWorker, setSelectedWorker] = useState("");
+	const [monitoringState, setMonitoringState] =
+		useState<MonitoringState | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [adding, setAdding] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -40,10 +47,30 @@ export function Workers() {
 			.then(([cloudflareWorkers, monitoredWorkers]) => {
 				setCloudflareWorkers(cloudflareWorkers);
 				setMonitoredWorkers(monitoredWorkers);
+				setSelectedWorker(monitoredWorkers[0]?.workerName ?? "");
 			})
 			.catch((cause: unknown) => setError(String(cause)))
 			.finally(() => setLoading(false));
 	}, []);
+
+	const loadMonitoringState = async (workerName: string) => {
+		const state = await request<MonitoringState>(
+			`/api/monitoring?workerName=${encodeURIComponent(workerName)}`,
+		);
+		setMonitoringState(state);
+	};
+
+	useEffect(() => {
+		if (selectedWorker === "") {
+			setMonitoringState(null);
+			return;
+		}
+
+		setMonitoringState(null);
+		loadMonitoringState(selectedWorker).catch((cause: unknown) =>
+			setError(String(cause)),
+		);
+	}, [selectedWorker]);
 
 	const monitoredNames = new Set(
 		monitoredWorkers.map(({ workerName }) => workerName),
@@ -63,11 +90,12 @@ export function Workers() {
 				{
 					method: "POST",
 					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify({ workerName: selectedWorker }),
+					body: JSON.stringify({ workerName: workerToAdd }),
 				},
 			);
 			setMonitoredWorkers((workers) => [...workers, worker]);
-			setSelectedWorker("");
+			setWorkerToAdd("");
+			setSelectedWorker(worker.workerName);
 		} catch (cause) {
 			setError(String(cause));
 		} finally {
@@ -76,57 +104,84 @@ export function Workers() {
 	};
 
 	return (
-		<>
-			<h2>Monitored workers</h2>
+		<div className={styles.shell}>
+			<aside className={styles.sidebar}>
+				<h1>Prodweiler</h1>
 
-			<form onSubmit={addWorker}>
-				<label htmlFor="worker">Cloudflare worker</label>
-				<select
-					id="worker"
-					value={selectedWorker}
-					onChange={(event) => setSelectedWorker(event.target.value)}
-					disabled={loading || adding || availableWorkers.length === 0}
-					required
-				>
-					<option value="">Select a worker</option>
-					{availableWorkers.map(({ id }) => (
-						<option key={id} value={id}>
-							{id}
-						</option>
-					))}
-				</select>
-				<button type="submit" disabled={adding || selectedWorker === ""}>
-					{adding ? "Adding..." : "Add worker"}
-				</button>
-			</form>
+				<div className={styles.sidebarControls}>
+					<label className={styles.workerPicker}>
+						<span>Worker</span>
+						<select
+							value={selectedWorker}
+							onChange={(event) =>
+								setSelectedWorker(event.target.value)
+							}
+							disabled={loading || monitoredWorkers.length === 0}
+						>
+							{monitoredWorkers.map(({ workerName }) => (
+								<option key={workerName} value={workerName}>
+									{workerName}
+								</option>
+							))}
+						</select>
+					</label>
 
-			{error && (
-				<p className="error" role="alert">
-					{error}
-				</p>
-			)}
+					<form className={styles.addWorker} onSubmit={addWorker}>
+						<label htmlFor="worker-to-add">Add monitored worker</label>
+						<select
+							id="worker-to-add"
+							value={workerToAdd}
+							onChange={(event) =>
+								setWorkerToAdd(event.target.value)
+							}
+							disabled={
+								loading ||
+								adding ||
+								availableWorkers.length === 0
+							}
+							required
+						>
+							<option value="">Select a Cloudflare Worker</option>
+							{availableWorkers.map(({ id }) => (
+								<option key={id} value={id}>
+									{id}
+								</option>
+							))}
+						</select>
+						<button
+							type="submit"
+							disabled={adding || workerToAdd === ""}
+						>
+							{adding ? "Adding..." : "Add"}
+						</button>
+					</form>
+				</div>
+			</aside>
 
-			<div aria-live="polite">
-				{loading ? (
-					<p>Loading workers...</p>
-				) : monitoredWorkers.length === 0 ? (
-					<p>No monitored workers.</p>
-				) : (
-					<ul>
-						{monitoredWorkers.map((worker) => (
-							<li key={worker.id}>
-								<strong>{worker.workerName}</strong>
-								<span>
-									Last checked: {" "}
-									{worker.lastCheckedAt === null
-										? "Not checked yet"
-										: new Date(worker.lastCheckedAt).toLocaleString()}
-								</span>
-							</li>
-						))}
-					</ul>
+			<main className={styles.main}>
+				{error && (
+					<p className={styles.error} role="alert">
+						{error}
+					</p>
 				)}
-			</div>
-		</>
+
+				{selectedWorker !== "" && (
+					<div className={styles.dashboard}>
+						<div className={styles.timelineCard}>
+							<Timeline checks={monitoringState?.checks ?? []} />
+						</div>
+						<div className={styles.dashboardPanels}>
+							<InvestigationThread
+								issues={monitoringState?.issues ?? []}
+							/>
+							<section
+								className={styles.monitoringContent}
+								aria-label="Monitoring details"
+							/>
+						</div>
+					</div>
+				)}
+			</main>
+		</div>
 	);
 }

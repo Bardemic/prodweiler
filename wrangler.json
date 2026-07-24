@@ -13,6 +13,9 @@
 	"observability": {
 		"enabled": true
 	},
+	"triggers": {
+		"crons": ["*/10 * * * *"]
+	},
 	"vars": {
 		"CLOUDFLARE_ACCOUNT_ID": "e7e3470b3ad5de64d5676db7de0267db"
 	},
@@ -26,6 +29,24 @@
 			"database_id": "85b4b3f5-4516-4de3-a24d-d123aa11bbb0"
 		}
 	],
+	"durable_objects": {
+		"bindings": [
+			{
+				"name": "AGENTS",
+				"class_name": "ProdweilerAgent"
+			}
+		]
+	},
+	"migrations": [
+		{
+			"tag": "v1",
+			"new_sqlite_classes": ["ProdweilerAgent"]
+		}
+	],
+	"ai": {
+		"binding": "AI",
+		"remote": true
+	},
 	"upload_source_maps": true,
 	"assets": {
 		"directory": "./dist/client",

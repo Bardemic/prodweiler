@@ -1,6 +1,6 @@
 :root {
-	font-family: sans-serif;
-	color: #111;
+	font-family: system-ui, sans-serif;
+	color: #171717;
 	background: #fff;
 }
 
@@ -11,7 +11,12 @@
 body {
 	margin: 0;
 	min-width: 320px;
-	min-height: 100vh;
+	height: 100vh;
+	overflow: hidden;
+}
+
+#root {
+	height: 100%;
 }
 
 button,
